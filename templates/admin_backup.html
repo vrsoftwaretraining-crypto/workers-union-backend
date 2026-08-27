@@ -1,0 +1,20 @@
+{% extends 'base.html' %}{% block content %}
+<h1>{{ translate('backup') }} / {{ translate('restore') }}</h1>
+<div class="two-col">
+  <section class="panel">
+    <h2>{{ translate('backup') }}</h2>
+    <p>Download a full backup of your union's data (workers, notifications, work entries, transactions) as a .zip file. Store it somewhere safe.</p>
+    <form method="post" action="{{ url_for('admin.backup_download') }}">
+      <button class="button full" type="submit">Download Backup</button>
+    </form>
+  </section>
+  <section class="panel">
+    <h2>{{ translate('restore') }}</h2>
+    <p style="color:#b71c1c;">Warning: restoring replaces your union's current data with the data in the backup file. This cannot be undone.</p>
+    <form method="post" enctype="multipart/form-data" action="{{ url_for('admin.backup_restore') }}" onsubmit="return confirm('This will REPLACE current data with the backup. Continue?')">
+      <div class="input-group"><input type="file" name="backup_file" accept=".zip" required></div>
+      <button class="button full text-danger" type="submit">Restore From Backup</button>
+    </form>
+  </section>
+</div>
+{% endblock %}

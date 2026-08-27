@@ -1,0 +1,24 @@
+{% extends 'base.html' %}{% block content %}
+<h1>{{ translate('welcome') }}, {{ user.full_name }}</h1>
+<p class="tagline">{{ translate('union_admin_portal') }} — {{ user.union.name }} ({{ user.union.registration_no }})</p>
+<div class="stats">
+  <article><span>{{ translate('members') }}</span><strong>{{ summary.total_workers }}</strong></article>
+  <article><span>{{ translate('pending') }}</span><strong>{{ summary.pending_workers }}</strong></article>
+  <article><span>{{ translate('approved') }}</span><strong>{{ summary.approved_workers }}</strong></article>
+  <article><span>{{ translate('total_income') }}</span><strong>₹{{ '{:,.0f}'.format(summary.total_income) }}</strong></article>
+  <article><span>{{ translate('total_expenses') }}</span><strong>₹{{ '{:,.0f}'.format(summary.total_expense) }}</strong></article>
+</div>
+<section class="panel">
+  <h2>{{ translate('notifications') }}</h2>
+  {% if notifications %}
+    {% for n in notifications %}
+      <div class="notification-card">
+        <b>{{ n.title }}</b>
+        <p>{{ n.body }}</p>
+        <div class="meta">{{ n.category }} · {{ n.created_at.strftime('%d %b %Y %H:%M') }}</div>
+      </div>
+    {% endfor %}
+  {% else %}<p class="empty">{{ translate('no_data') }}</p>{% endif %}
+  <a class="button" href="{{ url_for('admin.notifications') }}">{{ translate('send_notification') }}</a>
+</section>
+{% endblock %}

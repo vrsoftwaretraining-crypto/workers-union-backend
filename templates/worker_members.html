@@ -1,0 +1,11 @@
+{% extends 'base.html' %}{% block content %}
+<h1>{{ translate('members') }}</h1>
+<section class="panel">
+  <table>
+    <tr><th>{{ translate('full_name') }}</th><th>{{ translate('worker_type') }}</th><th>{{ translate('experience_years') }}</th><th>{{ translate('phone') }}</th></tr>
+    {% for m in members %}
+    <tr><td>{{ m.full_name }}</td><td>{{ m.worker_type or '-' }}</td><td>{{ m.experience_years or '-' }}</td><td>{{ m.phone }}</td></tr>
+    {% else %}<tr><td colspan="4" class="empty">{{ translate('no_data') }}</td></tr>{% endfor %}
+  </table>
+</section>
+{% endblock %}

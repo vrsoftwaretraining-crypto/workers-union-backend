@@ -1,0 +1,31 @@
+{% extends 'base.html' %}{% block content %}
+<h1>{{ translate('notifications') }}</h1>
+<section class="panel">
+  {% for n in notifications %}
+  <div class="notification-card {{ 'unread' if n.id not in read_ids else '' }}" id="notif-{{ n.id }}">
+    <b>{{ n.title }}</b>
+    <p>{{ n.body }}</p>
+    <button class="voice-btn" onclick="speak({{ n.body|tojson }}, {{ n.language|tojson }})">🔊 {{ translate('play_voice') }}</button>
+    {% if n.id not in read_ids %}
+    <button class="voice-btn" onclick="markRead({{ n.id }})">Mark as read</button>
+    {% endif %}
+    <div class="meta">{{ n.category }} · {{ n.created_at.strftime('%d %b %Y %H:%M') }}{% if n.location %} · {{ n.location }}{% endif %}</div>
+  </div>
+  {% else %}<p class="empty">{{ translate('no_data') }}</p>{% endfor %}
+</section>
+<script>
+function speak(text, lang) {
+  if (!('speechSynthesis' in window)) { alert('Voice playback not supported on this browser.'); return; }
+  const map = {te: 'te-IN', en: 'en-IN', hi: 'hi-IN', kn: 'kn-IN'};
+  const utter = new SpeechSynthesisUtterance(text);
+  utter.lang = map[lang] || 'en-IN';
+  window.speechSynthesis.cancel();
+  window.speechSynthesis.speak(utter);
+}
+function markRead(id) {
+  fetch(`/notifications/${id}/read`, {method: 'POST'}).then(() => {
+    document.getElementById('notif-' + id).classList.remove('unread');
+  });
+}
+</script>
+{% endblock %}

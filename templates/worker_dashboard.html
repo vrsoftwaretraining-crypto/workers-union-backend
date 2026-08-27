@@ -1,0 +1,33 @@
+{% extends 'base.html' %}{% block content %}
+<h1>{{ translate('welcome') }}, {{ user.full_name }}</h1>
+<p class="tagline">{{ user.worker_type or '' }} {% if user.experience_years %}· {{ user.experience_years }} yrs{% endif %}</p>
+<div class="stats">
+  <article><span>{{ translate('total_income') }}</span><strong>₹{{ '{:,.0f}'.format(totals.income) }}</strong></article>
+  <article><span>{{ translate('total_expenses') }}</span><strong>₹{{ '{:,.0f}'.format(totals.expense) }}</strong></article>
+  <article class="{{ 'positive' if totals.net >= 0 else 'negative' }}"><span>{{ translate('net_profit') }}</span><strong>₹{{ '{:,.0f}'.format(totals.net) }}</strong></article>
+</div>
+<section class="panel">
+  <h2>{{ translate('notifications') }}</h2>
+  {% if notifications %}
+    {% for n in notifications %}
+    <div class="notification-card">
+      <b>{{ n.title }}</b>
+      <p>{{ n.body }}</p>
+      <button class="voice-btn" onclick="speak({{ n.body|tojson }}, {{ n.language|tojson }})">🔊 {{ translate('play_voice') }}</button>
+      <div class="meta">{{ n.category }} · {{ n.created_at.strftime('%d %b %Y %H:%M') }}</div>
+    </div>
+    {% endfor %}
+  {% else %}<p class="empty">{{ translate('no_data') }}</p>{% endif %}
+  <a href="{{ url_for('worker.notifications') }}">{{ translate('notifications') }} →</a>
+</section>
+<script>
+function speak(text, lang) {
+  if (!('speechSynthesis' in window)) { alert('Voice playback not supported on this browser.'); return; }
+  const map = {te: 'te-IN', en: 'en-IN', hi: 'hi-IN', kn: 'kn-IN'};
+  const utter = new SpeechSynthesisUtterance(text);
+  utter.lang = map[lang] || 'en-IN';
+  window.speechSynthesis.cancel();
+  window.speechSynthesis.speak(utter);
+}
+</script>
+{% endblock %}

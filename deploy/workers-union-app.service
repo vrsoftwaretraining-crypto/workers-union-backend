@@ -1,0 +1,15 @@
+[Unit]
+Description=Workers Union App (gunicorn)
+After=network.target
+
+[Service]
+User=www-data
+Group=www-data
+WorkingDirectory=/opt/workers-union-app/backend
+EnvironmentFile=/opt/workers-union-app/backend/.env
+ExecStart=/opt/workers-union-app/backend/venv/bin/gunicorn -c gunicorn_conf.py wsgi:app
+Restart=always
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target

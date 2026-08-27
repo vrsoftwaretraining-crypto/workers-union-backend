@@ -1,0 +1,37 @@
+<!doctype html>
+<html lang="{{ session.get('language','te') }}">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>{{ translate('login') }} — {{ translate('app_name') }}</title>
+<link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+<div class="card">
+  <h1>🛠️ {{ translate('app_name') }}</h1>
+  <p class="tagline">{{ translate('tagline') }}</p>
+  <div class="language-switch" style="margin-bottom:16px;">
+    <a href="{{ url_for('language.change_language', lang='te') }}" style="border:1px solid #ccc;color:#333;">తెలుగు</a>
+    <a href="{{ url_for('language.change_language', lang='en') }}" style="border:1px solid #ccc;color:#333;">English</a>
+    <a href="{{ url_for('language.change_language', lang='hi') }}" style="border:1px solid #ccc;color:#333;">हिंदी</a>
+    <a href="{{ url_for('language.change_language', lang='kn') }}" style="border:1px solid #ccc;color:#333;">ಕನ್ನಡ</a>
+  </div>
+  {% with messages = get_flashed_messages(with_categories=true) %}
+    {% for category, message in messages %}
+      <div class="flash {{ category }}">{{ message }}</div>
+    {% endfor %}
+  {% endwith %}
+  <h2>{{ translate('login') }}</h2>
+  <form method="post" action="{{ url_for('auth.login') }}">
+    <div class="input-group"><input type="text" name="union_reg_no" placeholder="{{ translate('union_reg_no') }}" required></div>
+    <div class="input-group"><input type="text" name="username" placeholder="{{ translate('username') }}" required></div>
+    <div class="input-group"><input type="password" name="password" placeholder="{{ translate('password') }}" required></div>
+    <button type="submit" class="full">{{ translate('login_button') if translate('login_button') != 'login_button' else translate('login') }}</button>
+  </form>
+  <p style="margin-top:14px;font-size:14px;">
+    <a href="{{ url_for('auth.forgot_password_page') }}">{{ translate('forgot_password') }}</a>
+  </p>
+  <p style="font-size:14px;">{{ translate('register') }}: <a href="{{ url_for('auth.register_page') }}">{{ translate('register') }}</a>
+   &nbsp;|&nbsp; <a href="{{ url_for('auth.register_union_page') }}">New union? Register here</a></p>
+</div>
+</body>
+</html>

@@ -1,0 +1,28 @@
+{% extends 'base.html' %}{% block content %}
+<h1>{{ translate('my_cards') }}</h1>
+<div class="two-col">
+  <section class="panel">
+    <h2>{{ translate('health_card_no') }}</h2>
+    <p>{{ user.health_card_no or '-' }} — <span class="badge {{ 'approved' if user.health_card_status=='Verified' else 'pending' }}">{{ user.health_card_status }}</span></p>
+    <h2>{{ translate('union_card_no') }}</h2>
+    <p>{{ user.union_card_id_no or '-' }}</p>
+    <h2>{{ translate('labour_card_no') }}</h2>
+    <p>{{ user.labour_card_no or '-' }} — <span class="badge {{ 'approved' if user.labour_card_status=='Verified' else 'pending' }}">{{ user.labour_card_status }}</span></p>
+    <h2>{{ translate('insurance_provider') }}</h2>
+    <p>{{ user.insurance_provider or '-' }} ({{ user.insurance_policy_no or '-' }}) — <span class="badge {{ 'approved' if user.insurance_status=='Active' else 'pending' }}">{{ user.insurance_status }}</span></p>
+    <h2>{{ translate('bank_account_no') }}</h2>
+    <p>{{ user.bank_name or '-' }} · {{ user.bank_account_no or '-' }} · {{ user.bank_ifsc or '-' }}</p>
+    <h2>{{ translate('nominee_name') }}</h2>
+    <p>{{ user.nominee_name or '-' }} ({{ user.nominee_relation or '-' }})</p>
+  </section>
+  <section class="panel">
+    <h2>Upload / Update Card Documents</h2>
+    <form method="post" enctype="multipart/form-data">
+      <div class="input-group"><label>{{ translate('health_card_no') }} file (PDF/JPG/PNG)</label><input type="file" name="health_card_file" accept=".pdf,.jpg,.jpeg,.png"></div>
+      <div class="input-group"><label>{{ translate('union_card_no') }} file</label><input type="file" name="union_card_file" accept=".pdf,.jpg,.jpeg,.png"></div>
+      <div class="input-group"><label>{{ translate('labour_card_no') }} file</label><input type="file" name="labour_card_file" accept=".pdf,.jpg,.jpeg,.png"></div>
+      <button class="button full" type="submit">{{ translate('save') }}</button>
+    </form>
+  </section>
+</div>
+{% endblock %}

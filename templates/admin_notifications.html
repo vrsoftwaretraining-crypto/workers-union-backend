@@ -1,0 +1,51 @@
+{% extends 'base.html' %}{% block content %}
+<h1>{{ translate('send_notification') }}</h1>
+<div class="two-col">
+  <section class="panel">
+    <form method="post" class="form-grid">
+      <label class="span2">{{ translate('title') }}<input name="title" required></label>
+      <label class="span2">{{ translate('message') }}<textarea name="body" rows="4" required></textarea></label>
+      <label>{{ translate('category') }}
+        <select name="category">
+          <option value="general">{{ translate('general') }}</option>
+          <option value="meeting">{{ translate('meeting') }}</option>
+          <option value="function">{{ translate('function') }}</option>
+          <option value="urgent">{{ translate('urgent') }}</option>
+        </select>
+      </label>
+      <label>{{ translate('language') }}
+        <select name="language">
+          <option value="te">తెలుగు</option><option value="en">English</option>
+          <option value="hi">हिंदी</option><option value="kn">ಕನ್ನಡ</option>
+        </select>
+      </label>
+      <label>{{ translate('event_datetime') }}<input type="datetime-local" name="event_datetime"></label>
+      <label>{{ translate('location') }}<input name="location"></label>
+      <button class="button full span2" type="submit">{{ translate('send_notification') }}</button>
+    </form>
+  </section>
+  <section class="panel">
+    <h2>{{ translate('notifications') }}</h2>
+    {% for n in notifications %}
+      <div class="notification-card">
+        <b>{{ n.title }}</b>
+        <p>{{ n.body }}</p>
+        <button class="voice-btn" onclick="speak({{ n.body|tojson }}, {{ n.language|tojson }})">🔊 {{ translate('play_voice') }}</button>
+        <div class="meta">{{ n.category }} · {{ n.created_at.strftime('%d %b %Y %H:%M') }}{% if n.location %} · {{ n.location }}{% endif %}</div>
+      </div>
+    {% else %}
+      <p class="empty">{{ translate('no_data') }}</p>
+    {% endfor %}
+  </section>
+</div>
+<script>
+function speak(text, lang) {
+  if (!('speechSynthesis' in window)) { alert('Voice playback not supported on this browser.'); return; }
+  const map = {te: 'te-IN', en: 'en-IN', hi: 'hi-IN', kn: 'kn-IN'};
+  const utter = new SpeechSynthesisUtterance(text);
+  utter.lang = map[lang] || 'en-IN';
+  window.speechSynthesis.cancel();
+  window.speechSynthesis.speak(utter);
+}
+</script>
+{% endblock %}

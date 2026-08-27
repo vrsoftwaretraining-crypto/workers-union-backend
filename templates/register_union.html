@@ -1,0 +1,24 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Register Union</title><link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}"></head>
+<body>
+<div class="card wide">
+  <h1>Register Your Union</h1>
+  <p class="tagline">Creates the union workspace and its first admin login.</p>
+  {% with messages = get_flashed_messages(with_categories=true) %}
+    {% for category, message in messages %}<div class="flash {{ category }}">{{ message }}</div>{% endfor %}
+  {% endwith %}
+  <form method="post" class="form-grid" action="{{ url_for('auth.register_union') }}">
+    <label class="span2">Union Registration No.<input name="registration_no" required></label>
+    <label class="span2">Union Name<input name="name" required></label>
+    <label class="span2">Union Address<input name="address"></label>
+    <label>Contact Email (optional)<input type="email" name="contact_email"></label>
+    <label>Admin Phone<input name="admin_phone" required></label>
+    <label>Admin Full Name<input name="admin_full_name" required></label>
+    <label>Admin Username<input name="admin_username" required></label>
+    <label class="span2">Admin Password<input type="password" name="admin_password" required minlength="6"></label>
+    <button class="button full span2" type="submit">Register Union</button>
+  </form>
+  <p style="margin-top:14px;"><a href="{{ url_for('auth.login_page') }}">Back to login</a></p>
+</div>
+</body></html>

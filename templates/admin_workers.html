@@ -1,0 +1,38 @@
+{% extends 'base.html' %}{% block content %}
+<h1>{{ translate('add_worker') }}</h1>
+<section class="panel">
+  <table>
+    <tr>
+      <th>{{ translate('full_name') }}</th><th>{{ translate('worker_type') }}</th>
+      <th>{{ translate('phone') }}</th><th>{{ translate('status') }}</th><th></th>
+    </tr>
+    {% for w in workers %}
+    <tr>
+      <td>{{ w.full_name }}</td>
+      <td>{{ w.worker_type or '-' }}</td>
+      <td>{{ w.phone }}</td>
+      <td><span class="badge {{ w.status }}">{{ w.status }}</span></td>
+      <td style="white-space:nowrap;">
+        {% if w.status == 'pending' %}
+        <form style="display:inline" method="post" action="{{ url_for('admin.approve_worker', worker_id=w.id) }}">
+          <button>{{ translate('approve') }}</button>
+        </form>
+        <form style="display:inline" method="post" action="{{ url_for('admin.reject_worker', worker_id=w.id) }}">
+          <button class="text-danger">{{ translate('reject') }}</button>
+        </form>
+        {% else %}
+        <form style="display:inline" method="post" action="{{ url_for('admin.disable_worker', worker_id=w.id) }}" onsubmit="return confirm('Disable this worker account?')">
+          <button class="text-danger">Disable</button>
+        </form>
+        {% endif %}
+        <form style="display:inline" method="post" action="{{ url_for('admin.delete_worker', worker_id=w.id) }}" onsubmit="return confirm('Permanently delete this worker record?')">
+          <button class="text-danger">{{ translate('delete') }}</button>
+        </form>
+      </td>
+    </tr>
+    {% else %}
+    <tr><td colspan="5" class="empty">{{ translate('no_data') }}</td></tr>
+    {% endfor %}
+  </table>
+</section>
+{% endblock %}

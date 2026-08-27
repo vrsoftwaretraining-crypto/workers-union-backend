@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="{{ session.get('language','te') }}"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>{{ translate('register') }}</title><link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}"></head>
+<body>
+<div class="card wide">
+  <h1>{{ translate('register') }}</h1>
+  <p class="tagline">{{ translate('registration_pending_message') }}</p>
+  {% with messages = get_flashed_messages(with_categories=true) %}
+    {% for category, message in messages %}<div class="flash {{ category }}">{{ message }}</div>{% endfor %}
+  {% endwith %}
+  <form method="post" class="form-grid" action="{{ url_for('auth.register_worker') }}">
+    <label class="span2">{{ translate('union_reg_no') }}<input name="union_reg_no" required></label>
+    <label>{{ translate('username') }}<input name="username" required></label>
+    <label>{{ translate('password') }}<input type="password" name="password" required minlength="6"></label>
+    <label class="span2">{{ translate('full_name') }}<input name="full_name" required></label>
+    <label>{{ translate('phone') }}<input name="phone" required></label>
+    <label>{{ translate('email_optional') }}<input type="email" name="email"></label>
+    <label class="span2">{{ translate('address') }}<input name="address"></label>
+    <label>{{ translate('worker_type') }}
+      <select name="worker_type">
+        <option value="Plumber">{{ translate('worker_type_plumber') }}</option>
+        <option value="Electrician">{{ translate('worker_type_electrician') }}</option>
+        <option value="Mason">{{ translate('worker_type_mason') }}</option>
+        <option value="Carpenter">{{ translate('worker_type_carpenter') }}</option>
+        <option value="Painter">{{ translate('worker_type_painter') }}</option>
+        <option value="Welder">{{ translate('worker_type_welder') }}</option>
+        <option value="Other">{{ translate('worker_type_other') }}</option>
+      </select>
+    </label>
+    <label>{{ translate('experience_years') }}<input type="number" step="0.5" min="0" name="experience_years"></label>
+    <label>{{ translate('health_card_no') }}<input name="health_card_no"></label>
+    <label>{{ translate('union_card_no') }}<input name="union_card_id_no"></label>
+    <label>{{ translate('labour_card_no') }}<input name="labour_card_no"></label>
+    <label>{{ translate('bank_account_no') }}<input name="bank_account_no"></label>
+    <label>{{ translate('bank_ifsc') }}<input name="bank_ifsc"></label>
+    <label>{{ translate('bank_name') }}<input name="bank_name"></label>
+    <label>{{ translate('nominee_name') }}<input name="nominee_name"></label>
+    <label>{{ translate('nominee_relation') }}<input name="nominee_relation"></label>
+    <label>{{ translate('insurance_provider') }}<input name="insurance_provider"></label>
+    <label>{{ translate('insurance_policy_no') }}<input name="insurance_policy_no"></label>
+    <label>{{ translate('language') }}
+      <select name="language">
+        <option value="te">తెలుగు</option><option value="en">English</option>
+        <option value="hi">हिंदी</option><option value="kn">ಕನ್ನಡ</option>
+      </select>
+    </label>
+    <button class="button full span2" type="submit">{{ translate('register') }}</button>
+  </form>
+  <p style="margin-top:14px;"><a href="{{ url_for('auth.login_page') }}">{{ translate('login') }}</a></p>
+</div>
+</body></html>

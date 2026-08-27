@@ -1,0 +1,29 @@
+{% extends 'base.html' %}{% block content %}
+<h1>{{ translate('income_expenses') }}</h1>
+<div class="two-col">
+  <section class="panel">
+    <h2>{{ translate('add') }}</h2>
+    <form method="post" class="form-grid">
+      <label>{{ translate('kind') }}<select name="kind"><option>Income</option><option>Expense</option></select></label>
+      <label>{{ translate('date') }}<input type="date" name="transaction_date" value="{{ today }}" required></label>
+      <label>{{ translate('category') }}<input name="category" required></label>
+      <label>{{ translate('amount') }}<input type="number" step="0.01" min="0.01" name="amount" required></label>
+      <label class="span2">{{ translate('notes') }}<input name="notes"></label>
+      <button class="button full span2" type="submit">{{ translate('save') }}</button>
+    </form>
+  </section>
+  <section class="panel">
+    <table>
+      <tr><th>{{ translate('date') }}</th><th>{{ translate('kind') }}</th><th>{{ translate('category') }}</th><th>{{ translate('amount') }}</th><th></th></tr>
+      {% for e in entries %}
+      <tr>
+        <td>{{ e.transaction_date }}</td>
+        <td><span class="badge {{ 'approved' if e.kind=='Income' else 'rejected' }}">{{ translate(e.kind|lower) }}</span></td>
+        <td>{{ e.category }}</td><td>₹{{ '{:,.0f}'.format(e.amount) }}</td>
+        <td><form method="post" action="{{ url_for('worker.delete_transaction', entry_id=e.id) }}"><button class="text-danger">×</button></form></td>
+      </tr>
+      {% else %}<tr><td colspan="5" class="empty">{{ translate('no_data') }}</td></tr>{% endfor %}
+    </table>
+  </section>
+</div>
+{% endblock %}
