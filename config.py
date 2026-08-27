@@ -20,9 +20,15 @@ class Config:
     SECRET_KEY = os.environ.get("SECRET_KEY", "dev-insecure-secret-key-change-me")
     JWT_SECRET_KEY = os.environ.get("JWT_SECRET_KEY", SECRET_KEY)
 
-    SQLALCHEMY_DATABASE_URI = os.environ.get(
+    _raw_db_url = os.environ.get(
         "DATABASE_URL", "sqlite:///" + os.path.join(INSTANCE_DIR, "union.db")
     )
+    # Render/Heroku-style Postgres URLs start with "postgres://", but
+    # SQLAlchemy 1.4+ requires "postgresql://" -- normalise automatically
+    # so you can paste their URL straight into DATABASE_URL with no edits.
+    if _raw_db_url.startswith("postgres://"):
+        _raw_db_url = _raw_db_url.replace("postgres://", "postgresql://", 1)
+    SQLALCHEMY_DATABASE_URI = _raw_db_url
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     SQLALCHEMY_ENGINE_OPTIONS = {"pool_pre_ping": True}
 
