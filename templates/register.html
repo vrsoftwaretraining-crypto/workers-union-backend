@@ -9,6 +9,7 @@
     {% for category, message in messages %}<div class="flash {{ category }}">{{ message }}</div>{% endfor %}
   {% endwith %}
   <form method="post" class="form-grid" action="{{ url_for('auth.register_worker') }}">
+  <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
     <label class="span2">{{ translate('union_reg_no') }}<input name="union_reg_no" required></label>
     <label>{{ translate('username') }}<input name="username" required></label>
     <label>{{ translate('password') }}<input type="password" name="password" required minlength="6"></label>

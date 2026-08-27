@@ -23,7 +23,11 @@ function speak(text, lang) {
   window.speechSynthesis.speak(utter);
 }
 function markRead(id) {
-  fetch(`/notifications/${id}/read`, {method: 'POST'}).then(() => {
+  const csrfToken = document.querySelector('meta[name="csrf-token"]').content;
+  fetch(`/notifications/${id}/read`, {
+    method: 'POST',
+    headers: {'X-CSRFToken': csrfToken}
+  }).then(() => {
     document.getElementById('notif-' + id).classList.remove('unread');
   });
 }

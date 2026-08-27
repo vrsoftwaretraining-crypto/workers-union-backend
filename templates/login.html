@@ -22,6 +22,7 @@
   {% endwith %}
   <h2>{{ translate('login') }}</h2>
   <form method="post" action="{{ url_for('auth.login') }}">
+  <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
     <div class="input-group"><input type="text" name="union_reg_no" placeholder="{{ translate('union_reg_no') }}" required></div>
     <div class="input-group"><input type="text" name="username" placeholder="{{ translate('username') }}" required></div>
     <div class="input-group"><input type="password" name="password" placeholder="{{ translate('password') }}" required></div>

@@ -3,6 +3,7 @@
 <div class="two-col">
   <section class="panel">
     <form method="post" class="form-grid">
+  <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
       <label class="span2">{{ translate('title') }}<input name="title" required></label>
       <label class="span2">{{ translate('message') }}<textarea name="body" rows="4" required></textarea></label>
       <label>{{ translate('category') }}

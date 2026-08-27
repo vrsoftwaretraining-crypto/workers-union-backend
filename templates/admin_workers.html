@@ -15,17 +15,21 @@
       <td style="white-space:nowrap;">
         {% if w.status == 'pending' %}
         <form style="display:inline" method="post" action="{{ url_for('admin.approve_worker', worker_id=w.id) }}">
+  <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
           <button>{{ translate('approve') }}</button>
         </form>
         <form style="display:inline" method="post" action="{{ url_for('admin.reject_worker', worker_id=w.id) }}">
+  <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
           <button class="text-danger">{{ translate('reject') }}</button>
         </form>
         {% else %}
         <form style="display:inline" method="post" action="{{ url_for('admin.disable_worker', worker_id=w.id) }}" onsubmit="return confirm('Disable this worker account?')">
+  <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
           <button class="text-danger">Disable</button>
         </form>
         {% endif %}
         <form style="display:inline" method="post" action="{{ url_for('admin.delete_worker', worker_id=w.id) }}" onsubmit="return confirm('Permanently delete this worker record?')">
+  <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
           <button class="text-danger">{{ translate('delete') }}</button>
         </form>
       </td>

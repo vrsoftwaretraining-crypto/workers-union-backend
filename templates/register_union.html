@@ -9,6 +9,7 @@
     {% for category, message in messages %}<div class="flash {{ category }}">{{ message }}</div>{% endfor %}
   {% endwith %}
   <form method="post" class="form-grid" action="{{ url_for('auth.register_union') }}">
+  <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
     <label class="span2">Union Registration No.<input name="registration_no" required></label>
     <label class="span2">Union Name<input name="name" required></label>
     <label class="span2">Union Address<input name="address"></label>

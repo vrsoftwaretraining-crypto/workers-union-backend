@@ -4,6 +4,7 @@
   <section class="panel">
     <h2>{{ translate('add') }}</h2>
     <form method="post" class="form-grid">
+  <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
       <label>{{ translate('date') }}<input type="date" name="work_date" value="{{ today }}" required></label>
       <label>{{ translate('hours_worked') }}<input type="number" step="0.5" min="0" name="hours_worked"></label>
       <label class="span2">{{ translate('description') }}<input name="description" required></label>
@@ -17,7 +18,8 @@
       {% for e in entries %}
       <tr>
         <td>{{ e.work_date }}</td><td>{{ e.description }}</td><td>{{ e.location or '-' }}</td><td>{{ e.hours_worked or '-' }}</td>
-        <td><form method="post" action="{{ url_for('worker.delete_work_entry', entry_id=e.id) }}"><button class="text-danger">×</button></form></td>
+        <td><form method="post" action="{{ url_for('worker.delete_work_entry', entry_id=e.id) }}">
+  <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"><button class="text-danger">×</button></form></td>
       </tr>
       {% else %}<tr><td colspan="5" class="empty">{{ translate('no_data') }}</td></tr>{% endfor %}
     </table>
