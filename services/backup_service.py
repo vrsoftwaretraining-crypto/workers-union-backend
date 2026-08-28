@@ -22,6 +22,7 @@ from models.union import Union
 from models.user import User
 from models.notification import Notification, NotificationRead
 from models.work import WorkEntry, Transaction
+from models.claim import Claim
 
 logger = logging.getLogger(__name__)
 
@@ -35,6 +36,7 @@ TABLES = {
     "notification_reads": NotificationRead,
     "work_entries": WorkEntry,
     "worker_transactions": Transaction,
+    "claims": Claim,
 }
 
 
@@ -93,7 +95,7 @@ def restore_backup(file_storage):
 
     # Delete existing rows for the affected scope, in FK-safe order.
     delete_order = ["notification_reads", "notifications", "work_entries",
-                     "worker_transactions", "users", "unions"]
+                     "worker_transactions", "claims", "users", "unions"]
     for table_name in delete_order:
         model = TABLES[table_name]
         query = model.query
@@ -107,13 +109,16 @@ def restore_backup(file_storage):
 
     # Re-insert in FK-safe order.
     insert_order = ["unions", "users", "notifications", "notification_reads",
-                     "work_entries", "worker_transactions"]
+                     "work_entries", "worker_transactions", "claims"]
     for table_name in insert_order:
         model = TABLES[table_name]
         for row in dump.get(table_name, []):
             clean_row = dict(row)
             for date_field in ("sowing_date", "transaction_date", "work_date", "event_datetime",
-                               "created_at", "updated_at", "last_login_at", "read_at"):
+                               "created_at", "updated_at", "last_login_at", "read_at",
+                               "incident_date", "payment_date", "processed_at",
+                               "union_card_issue_date", "union_card_expiry_date",
+                               "labour_card_issue_date", "labour_card_expiry_date"):
                 if clean_row.get(date_field):
                     try:
                         if "T" in clean_row[date_field] or ":" in clean_row[date_field]:

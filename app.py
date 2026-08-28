@@ -103,6 +103,7 @@ def create_app(config_name=None):
         from models.user import User
         from models.notification import Notification, NotificationRead
         from models.work import WorkEntry, Transaction
+        from models.claim import Claim
         db.create_all()
         logger.info("Database tables verified/created")
 

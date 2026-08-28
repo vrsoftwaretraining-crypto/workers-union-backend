@@ -1,5 +1,6 @@
 {% extends 'base.html' %}{% block content %}
 <h1>{{ translate('add_worker') }}</h1>
+<a class="button" href="{{ url_for('admin.add_worker_page') }}" style="display:inline-block;margin-bottom:14px;">+ {{ translate('add_new_member') }}</a>
 <section class="panel">
   <table>
     <tr>
@@ -13,6 +14,7 @@
       <td>{{ w.phone }}</td>
       <td><span class="badge {{ w.status }}">{{ w.status }}</span></td>
       <td style="white-space:nowrap;">
+        <a class="button" href="{{ url_for('admin.edit_worker_page', worker_id=w.id) }}">{{ translate('edit') }}</a>
         {% if w.status == 'pending' %}
         <form style="display:inline" method="post" action="{{ url_for('admin.approve_worker', worker_id=w.id) }}">
   <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">

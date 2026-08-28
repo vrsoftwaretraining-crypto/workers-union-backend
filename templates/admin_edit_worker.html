@@ -1,0 +1,83 @@
+{% extends 'base.html' %}{% block content %}
+<h1>{{ translate('edit_member') }} — {{ worker.full_name }}</h1>
+<p class="tagline">{{ translate('username') }}: {{ worker.username }} · <span class="badge {{ worker.status }}">{{ worker.status }}</span></p>
+
+<section class="panel">
+  <form method="post" enctype="multipart/form-data" class="form-grid" action="{{ url_for('admin.edit_worker', worker_id=worker.id) }}">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+
+    <h2 class="span2">{{ translate('basic_details') }}</h2>
+    <label>{{ translate('full_name') }}<input name="full_name" value="{{ worker.full_name }}" required></label>
+    <label>{{ translate('phone') }}<input name="phone" value="{{ worker.phone }}" required></label>
+    <label>{{ translate('email_optional') }}<input type="email" name="email" value="{{ worker.email or '' }}"></label>
+    <label class="span2">{{ translate('address') }}<input name="address" value="{{ worker.address or '' }}"></label>
+    <label>{{ translate('worker_type') }}
+      <select name="worker_type">
+        {% for wt in ['Plumber','Electrician','Mason','Carpenter','Painter','Welder','Other'] %}
+        <option value="{{ wt }}" {{ 'selected' if worker.worker_type == wt else '' }}>{{ translate('worker_type_' + wt.lower()) }}</option>
+        {% endfor %}
+      </select>
+    </label>
+    <label>{{ translate('experience_years') }}<input type="number" step="0.5" min="0" name="experience_years" value="{{ worker.experience_years or '' }}"></label>
+    <label>{{ translate('photo') }}
+      {% if worker.photo_file %}<div><a href="{{ url_for('admin.view_file', relpath=worker.photo_file) }}" target="_blank">{{ translate('view') }}</a></div>{% else %}<div class="empty">{{ translate('no_file') }}</div>{% endif %}
+      <input type="file" name="photo_file" accept=".jpg,.jpeg,.png,.pdf">
+    </label>
+    <label>{{ translate('aadhar_no') }}<input name="aadhar_no" value="{{ worker.aadhar_no or '' }}" maxlength="14"></label>
+    <label>{{ translate('pan_no') }}<input name="pan_no" value="{{ worker.pan_no or '' }}" maxlength="10" style="text-transform:uppercase"></label>
+
+    <h2 class="span2">{{ translate('health_card_no') }} <span class="badge {{ 'approved' if worker.health_card_status == 'Verified' else 'pending' }}">{{ worker.health_card_status }}</span></h2>
+    <label>{{ translate('health_card_no') }}<input name="health_card_no" value="{{ worker.health_card_no or '' }}"></label>
+    <label>
+      {% if worker.health_card_file %}<div><a href="{{ url_for('admin.view_file', relpath=worker.health_card_file) }}" target="_blank">{{ translate('view') }}</a></div>{% else %}<div class="empty">{{ translate('no_file') }}</div>{% endif %}
+      <input type="file" name="health_card_file" accept=".jpg,.jpeg,.png,.pdf">
+    </label>
+
+    <h2 class="span2">{{ translate('union_card_no') }}
+      {% if worker.union_card_expiry_date and worker.union_card_expiry_date < today %}<span class="badge rejected">{{ translate('expired') }}</span>{% endif %}
+    </h2>
+    <label>{{ translate('union_card_no') }}<input name="union_card_id_no" value="{{ worker.union_card_id_no or '' }}"></label>
+    <label class="span2">
+      {% if worker.union_card_file %}<div><a href="{{ url_for('admin.view_file', relpath=worker.union_card_file) }}" target="_blank">{{ translate('view') }}</a></div>{% else %}<div class="empty">{{ translate('no_file') }}</div>{% endif %}
+      <input type="file" name="union_card_file" accept=".jpg,.jpeg,.png,.pdf">
+    </label>
+    <label>{{ translate('issue_date') }}<input type="date" name="union_card_issue_date" value="{{ worker.union_card_issue_date or '' }}"></label>
+    <label>{{ translate('expiry_date') }} ({{ translate('renew') }})<input type="date" name="union_card_expiry_date" value="{{ worker.union_card_expiry_date or '' }}"></label>
+
+    <h2 class="span2">{{ translate('labour_card_no') }}
+      {% if worker.labour_card_expiry_date and worker.labour_card_expiry_date < today %}<span class="badge rejected">{{ translate('expired') }}</span>{% endif %}
+    </h2>
+    <label>{{ translate('labour_card_no') }}<input name="labour_card_no" value="{{ worker.labour_card_no or '' }}"></label>
+    <label class="span2">
+      {% if worker.labour_card_file %}<div><a href="{{ url_for('admin.view_file', relpath=worker.labour_card_file) }}" target="_blank">{{ translate('view') }}</a></div>{% else %}<div class="empty">{{ translate('no_file') }}</div>{% endif %}
+      <input type="file" name="labour_card_file" accept=".jpg,.jpeg,.png,.pdf">
+    </label>
+    <label>{{ translate('issue_date') }}<input type="date" name="labour_card_issue_date" value="{{ worker.labour_card_issue_date or '' }}"></label>
+    <label>{{ translate('expiry_date') }} ({{ translate('renew') }})<input type="date" name="labour_card_expiry_date" value="{{ worker.labour_card_expiry_date or '' }}"></label>
+
+    <h2 class="span2">{{ translate('insurance_provider') }}</h2>
+    <label>{{ translate('insurance_provider') }}<input name="insurance_provider" value="{{ worker.insurance_provider or '' }}"></label>
+    <label>{{ translate('insurance_policy_no') }}<input name="insurance_policy_no" value="{{ worker.insurance_policy_no or '' }}"></label>
+    <label>{{ translate('status') }}
+      <select name="insurance_status">
+        {% for s in ['Not Enrolled','Active','Lapsed'] %}
+        <option value="{{ s }}" {{ 'selected' if worker.insurance_status == s else '' }}>{{ s }}</option>
+        {% endfor %}
+      </select>
+    </label>
+    <label class="span2">
+      {% if worker.insurance_card_file %}<div><a href="{{ url_for('admin.view_file', relpath=worker.insurance_card_file) }}" target="_blank">{{ translate('view') }}</a></div>{% else %}<div class="empty">{{ translate('no_file') }}</div>{% endif %}
+      <input type="file" name="insurance_card_file" accept=".jpg,.jpeg,.png,.pdf">
+    </label>
+
+    <h2 class="span2">{{ translate('bank_account_no') }}</h2>
+    <label>{{ translate('bank_account_no') }}<input name="bank_account_no" value="{{ worker.bank_account_no or '' }}"></label>
+    <label>{{ translate('bank_ifsc') }}<input name="bank_ifsc" value="{{ worker.bank_ifsc or '' }}"></label>
+    <label>{{ translate('bank_name') }}<input name="bank_name" value="{{ worker.bank_name or '' }}"></label>
+    <label>{{ translate('nominee_name') }}<input name="nominee_name" value="{{ worker.nominee_name or '' }}"></label>
+    <label>{{ translate('nominee_relation') }}<input name="nominee_relation" value="{{ worker.nominee_relation or '' }}"></label>
+
+    <button class="button full span2" type="submit">{{ translate('save') }}</button>
+  </form>
+</section>
+{% endblock %}

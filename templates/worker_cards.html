@@ -14,6 +14,10 @@
     <p>{{ user.bank_name or '-' }} · {{ user.bank_account_no or '-' }} · {{ user.bank_ifsc or '-' }}</p>
     <h2>{{ translate('nominee_name') }}</h2>
     <p>{{ user.nominee_name or '-' }} ({{ user.nominee_relation or '-' }})</p>
+    <h2>{{ translate('aadhar_no') }}</h2>
+    <p>{{ user.aadhar_no or '-' }}</p>
+    <h2>{{ translate('pan_no') }}</h2>
+    <p>{{ user.pan_no or '-' }}</p>
   </section>
   <section class="panel">
     <h2>Upload / Update Card Documents</h2>

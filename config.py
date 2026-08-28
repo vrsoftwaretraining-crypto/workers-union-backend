@@ -42,7 +42,7 @@ class Config:
 
     UPLOAD_DIR = os.environ.get("UPLOAD_DIR", os.path.join(BASE_DIR, "uploads"))
     os.makedirs(UPLOAD_DIR, exist_ok=True)
-    MAX_CONTENT_LENGTH = 8 * 1024 * 1024  # 8 MB per upload
+    MAX_CONTENT_LENGTH = 20 * 1024 * 1024  # 20 MB per request (admin can upload up to 5 documents at once)
     ALLOWED_UPLOAD_EXTENSIONS = {"pdf", "jpg", "jpeg", "png"}
 
     BACKUP_DIR = os.environ.get("BACKUP_DIR", os.path.join(BASE_DIR, "backups"))

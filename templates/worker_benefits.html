@@ -1,0 +1,38 @@
+{% extends 'base.html' %}{% block content %}
+<h1>{{ translate('benefits') }}</h1>
+<div class="two-col">
+  <section class="panel">
+    <h2>{{ translate('submit_claim') }}</h2>
+    <form method="post" enctype="multipart/form-data" class="form-grid">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+      <label>{{ translate('claim_type') }}
+        <select name="claim_type">
+          <option value="Insurance">{{ translate('insurance') }}</option>
+          <option value="Accident">{{ translate('accident') }}</option>
+          <option value="Other">{{ translate('other') }}</option>
+        </select>
+      </label>
+      <label>{{ translate('incident_date') }}<input type="date" name="incident_date" max="{{ today }}"></label>
+      <label class="span2">{{ translate('description') }}<textarea name="description" rows="3" required></textarea></label>
+      <label>{{ translate('amount_requested') }}<input type="number" step="0.01" min="0" name="amount_requested"></label>
+      <label>{{ translate('supporting_document') }}<input type="file" name="supporting_document" accept=".jpg,.jpeg,.png,.pdf"></label>
+      <button class="button full span2" type="submit">{{ translate('submit_claim') }}</button>
+    </form>
+  </section>
+  <section class="panel">
+    <h2>{{ translate('claims') }}</h2>
+    {% for c in claims %}
+    <div class="notification-card">
+      <b>{{ translate(c.claim_type|lower) }}</b> —
+      <span class="badge {{ 'approved' if c.status in ['Approved','Paid'] else ('rejected' if c.status=='Rejected' else 'pending') }}">{{ translate(c.status|lower) if c.status|lower in ['submitted','paid'] else c.status }}</span>
+      <p>{{ c.description }}</p>
+      {% if c.amount_requested %}<div class="meta">{{ translate('amount_requested') }}: ₹{{ '{:,.0f}'.format(c.amount_requested) }}</div>{% endif %}
+      {% if c.amount_approved %}<div class="meta">{{ translate('amount_approved') }}: ₹{{ '{:,.0f}'.format(c.amount_approved) }}</div>{% endif %}
+      {% if c.admin_notes %}<div class="meta">{{ translate('admin_notes') }}: {{ c.admin_notes }}</div>{% endif %}
+      {% if c.payment_date %}<div class="meta">{{ translate('payment_date') }}: {{ c.payment_date }} {% if c.payment_reference %}({{ c.payment_reference }}){% endif %}</div>{% endif %}
+      <div class="meta">{{ c.created_at.strftime('%d %b %Y') }}</div>
+    </div>
+    {% else %}<p class="empty">{{ translate('no_data') }}</p>{% endfor %}
+  </section>
+</div>
+{% endblock %}

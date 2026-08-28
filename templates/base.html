@@ -16,12 +16,14 @@
       <a href="{{ url_for('admin.dashboard') }}">{{ translate('dashboard') }}</a>
       <a href="{{ url_for('admin.workers') }}">{{ translate('members') }}</a>
       <a href="{{ url_for('admin.notifications') }}">{{ translate('notifications') }}</a>
+      <a href="{{ url_for('admin.claims') }}">{{ translate('claims') }}</a>
       <a href="{{ url_for('admin.backup_page') }}">{{ translate('backup') }}</a>
     {% else %}
       <a href="{{ url_for('worker.dashboard') }}">{{ translate('dashboard') }}</a>
       <a href="{{ url_for('worker.members') }}">{{ translate('members') }}</a>
       <a href="{{ url_for('worker.notifications') }}">{{ translate('notifications') }}</a>
       <a href="{{ url_for('worker.my_cards') }}">{{ translate('my_cards') }}</a>
+      <a href="{{ url_for('worker.benefits') }}">{{ translate('benefits') }}</a>
       <a href="{{ url_for('worker.work_entries') }}">{{ translate('work_entries') }}</a>
       <a href="{{ url_for('worker.transactions') }}">{{ translate('income_expenses') }}</a>
       <a href="{{ url_for('worker.reports') }}">{{ translate('reports') }}</a>

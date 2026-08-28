@@ -29,6 +29,9 @@ class User(db.Model, UserMixin):
     address = db.Column(db.String(250))
     phone = db.Column(db.String(15), nullable=False)
     email = db.Column(db.String(120), nullable=True)
+    photo_file = db.Column(db.String(255))
+    aadhar_no = db.Column(db.String(20))   # optional, voluntary -- see README on Aadhar Act compliance
+    pan_no = db.Column(db.String(15))      # optional
 
     worker_type = db.Column(db.String(50))  # Plumber, Electrician, etc.
     experience_years = db.Column(db.Float)
@@ -39,10 +42,14 @@ class User(db.Model, UserMixin):
 
     union_card_id_no = db.Column(db.String(50))
     union_card_file = db.Column(db.String(255))
+    union_card_issue_date = db.Column(db.Date)
+    union_card_expiry_date = db.Column(db.Date)
 
     labour_card_no = db.Column(db.String(50))  # e-Shram / labour card number
     labour_card_file = db.Column(db.String(255))
     labour_card_status = db.Column(db.String(20), default="Not Submitted")
+    labour_card_issue_date = db.Column(db.Date)
+    labour_card_expiry_date = db.Column(db.Date)
 
     bank_account_no = db.Column(db.String(30))
     bank_ifsc = db.Column(db.String(15))
@@ -54,6 +61,7 @@ class User(db.Model, UserMixin):
     insurance_provider = db.Column(db.String(100))
     insurance_policy_no = db.Column(db.String(50))
     insurance_status = db.Column(db.String(20), default="Not Enrolled")
+    insurance_card_file = db.Column(db.String(255))
 
     language = db.Column(db.String(5), default="te")
     created_at = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
@@ -62,6 +70,19 @@ class User(db.Model, UserMixin):
     @property
     def is_active(self):
         return self.status == "approved"
+
+    @staticmethod
+    def _masked(value, keep=4):
+        """Masks all but the last `keep` characters -- used when sending
+        Aadhar/PAN over the API so a lost/stolen phone doesn't expose the
+        full number. The admin web portal (in-person record management)
+        still shows the full value directly from the model."""
+        if not value:
+            return value
+        value = str(value)
+        if len(value) <= keep:
+            return value
+        return "X" * (len(value) - keep) + value[-keep:]
 
     def get_id(self):
         # Flask-Login needs a globally unique id string; user id alone is
@@ -88,6 +109,9 @@ class User(db.Model, UserMixin):
             "address": self.address,
             "phone": self.phone,
             "email": self.email,
+            "photo_file": self.photo_file,
+            "aadhar_no": self._masked(self.aadhar_no),
+            "pan_no": self.pan_no,
             "worker_type": self.worker_type,
             "experience_years": self.experience_years,
             "health_card_no": self.health_card_no,
@@ -95,9 +119,13 @@ class User(db.Model, UserMixin):
             "health_card_status": self.health_card_status,
             "union_card_id_no": self.union_card_id_no,
             "union_card_file": self.union_card_file,
+            "union_card_issue_date": self.union_card_issue_date.isoformat() if self.union_card_issue_date else None,
+            "union_card_expiry_date": self.union_card_expiry_date.isoformat() if self.union_card_expiry_date else None,
             "labour_card_no": self.labour_card_no,
             "labour_card_file": self.labour_card_file,
             "labour_card_status": self.labour_card_status,
+            "labour_card_issue_date": self.labour_card_issue_date.isoformat() if self.labour_card_issue_date else None,
+            "labour_card_expiry_date": self.labour_card_expiry_date.isoformat() if self.labour_card_expiry_date else None,
             "bank_account_no": self.bank_account_no,
             "bank_ifsc": self.bank_ifsc,
             "bank_name": self.bank_name,
@@ -106,5 +134,6 @@ class User(db.Model, UserMixin):
             "insurance_provider": self.insurance_provider,
             "insurance_policy_no": self.insurance_policy_no,
             "insurance_status": self.insurance_status,
+            "insurance_card_file": self.insurance_card_file,
             "language": self.language,
         }

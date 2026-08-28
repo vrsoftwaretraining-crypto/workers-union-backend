@@ -11,6 +11,7 @@ from database.db import db
 from models.notification import Notification, NotificationRead
 from models.user import User
 from models.work import Transaction, WorkEntry
+from models.claim import Claim
 from services.auth_helpers import api_login_required, worker_required
 from services.file_service import save_upload
 from services.report_service import build_worker_excel_report, build_worker_pdf_report
@@ -422,3 +423,76 @@ def api_set_language(user):
     user.language = lang
     db.session.commit()
     return jsonify({"success": True})
+
+
+# =====================================================
+# BENEFITS / CLAIMS (insurance, accident compensation)
+# =====================================================
+@worker.route("/benefits", methods=["GET", "POST"])
+@login_required
+@worker_required
+def benefits():
+    if request.method == "POST":
+        try:
+            incident_raw = request.form.get("incident_date", "").strip()
+            claim = Claim(
+                union_id=current_user.union_id,
+                user_id=current_user.id,
+                claim_type=request.form.get("claim_type", "Insurance"),
+                incident_date=datetime.strptime(incident_raw, "%Y-%m-%d").date() if incident_raw else None,
+                description=request.form["description"].strip(),
+                amount_requested=float(request.form["amount_requested"]) if request.form.get("amount_requested") else None,
+                status="Submitted",
+                created_by_role="worker",
+            )
+            if not claim.description:
+                raise ValueError
+            db.session.add(claim)
+            db.session.flush()
+
+            file_storage = request.files.get("supporting_document")
+            if file_storage and file_storage.filename:
+                rel_path = save_upload(
+                    file_storage,
+                    union_reg_no=current_user.union.registration_no,
+                    user_id=current_user.id,
+                    doc_type=f"claim_{claim.id}",
+                )
+                claim.supporting_document_file = rel_path
+
+            db.session.commit()
+            flash("Claim submitted. Your union admin will review it.", "success")
+        except (ValueError, KeyError):
+            flash("Please describe the claim (and a valid amount, if given).", "error")
+        return redirect(url_for("worker.benefits"))
+
+    claims = Claim.query.filter_by(user_id=current_user.id).order_by(Claim.created_at.desc()).all()
+    return render_template("worker_benefits.html", user=current_user, claims=claims, today=date.today())
+
+
+@worker.route("/api/claims", methods=["GET", "POST"])
+@api_login_required
+def api_claims(user):
+    if request.method == "POST":
+        data = request.get_json(force=True, silent=True) or {}
+        try:
+            claim = Claim(
+                union_id=user.union_id,
+                user_id=user.id,
+                claim_type=data.get("claim_type", "Insurance"),
+                incident_date=datetime.fromisoformat(data["incident_date"]).date() if data.get("incident_date") else None,
+                description=str(data["description"]).strip(),
+                amount_requested=data.get("amount_requested"),
+                status="Submitted",
+                created_by_role="worker",
+            )
+            if not claim.description:
+                raise ValueError
+        except (KeyError, ValueError):
+            return jsonify({"success": False, "message": "A description is required"}), 400
+        db.session.add(claim)
+        db.session.commit()
+        return jsonify({"success": True, "claim": claim.to_dict()})
+
+    claims = Claim.query.filter_by(user_id=user.id).order_by(Claim.created_at.desc()).all()
+    return jsonify({"success": True, "claims": [c.to_dict() for c in claims]})
