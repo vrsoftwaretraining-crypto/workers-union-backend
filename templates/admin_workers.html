@@ -9,11 +9,12 @@
     </tr>
     {% for w in workers %}
     <tr>
-      <td>{{ w.full_name }}</td>
+      <td><a href="{{ url_for('admin.view_worker_page', worker_id=w.id) }}">{{ w.full_name }}</a></td>
       <td>{{ w.worker_type or '-' }}</td>
       <td>{{ w.phone }}</td>
       <td><span class="badge {{ w.status }}">{{ w.status }}</span></td>
       <td style="white-space:nowrap;">
+        <a class="button" href="{{ url_for('admin.view_worker_page', worker_id=w.id) }}">{{ translate('view') }}</a>
         <a class="button" href="{{ url_for('admin.edit_worker_page', worker_id=w.id) }}">{{ translate('edit') }}</a>
         {% if w.status == 'pending' %}
         <form style="display:inline" method="post" action="{{ url_for('admin.approve_worker', worker_id=w.id) }}">

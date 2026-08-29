@@ -204,6 +204,16 @@ def _save_worker_documents(worker_obj):
                 flash(f"{doc_type}: {exc}", "error")
 
 
+@admin.route("/workers/<int:worker_id>/view")
+@login_required
+@admin_required
+def view_worker_page(worker_id):
+    worker = User.query.filter_by(id=worker_id, union_id=current_user.union_id, role="worker").first_or_404()
+    claims_count = Claim.query.filter_by(union_id=current_user.union_id, user_id=worker.id).count()
+    return render_template("admin_view_worker.html", user=current_user, worker=worker,
+                            today=date.today(), claims_count=claims_count)
+
+
 @admin.route("/workers/<int:worker_id>/edit", methods=["GET"])
 @login_required
 @admin_required
@@ -399,6 +409,56 @@ def backup_restore():
 def api_workers(user):
     all_workers = User.query.filter_by(union_id=user.union_id, role="worker").order_by(User.full_name).all()
     return jsonify({"success": True, "workers": [w.to_full_dict() for w in all_workers]})
+
+
+@admin.route("/api/workers", methods=["POST"])
+@api_admin_required
+def api_add_worker(user):
+    """Admin directly registers a worker via JSON (no file uploads -- use
+    the web Add/Edit Worker screens for document uploads). Kept for parity
+    with the web form and for any future admin-side mobile tooling."""
+    data = request.get_json(force=True, silent=True) or {}
+    username = str(data.get("username", "")).strip()
+    password = str(data.get("password", ""))
+    full_name = str(data.get("full_name", "")).strip()
+    phone = str(data.get("phone", "")).strip()
+
+    if not all([username, password, full_name, phone]):
+        return jsonify({"success": False, "message": "username, password, full_name and phone are required"}), 400
+
+    if User.query.filter_by(union_id=user.union_id, username=username).first():
+        return jsonify({"success": False, "message": "Username already taken in this union"}), 409
+
+    new_worker = User(
+        union_id=user.union_id,
+        role="worker",
+        username=username,
+        password_hash=generate_password_hash(password),
+        status="approved",
+        full_name=full_name,
+        address=data.get("address"),
+        phone=phone,
+        email=data.get("email"),
+        worker_type=data.get("worker_type"),
+        experience_years=data.get("experience_years"),
+        health_card_no=data.get("health_card_no"),
+        union_card_id_no=data.get("union_card_id_no"),
+        labour_card_no=data.get("labour_card_no"),
+        bank_account_no=data.get("bank_account_no"),
+        bank_ifsc=data.get("bank_ifsc"),
+        bank_name=data.get("bank_name"),
+        nominee_name=data.get("nominee_name"),
+        nominee_relation=data.get("nominee_relation"),
+        insurance_provider=data.get("insurance_provider"),
+        insurance_policy_no=data.get("insurance_policy_no"),
+        aadhar_no=data.get("aadhar_no"),
+        pan_no=data.get("pan_no"),
+        language=data.get("language", "te"),
+    )
+    db.session.add(new_worker)
+    db.session.commit()
+    logger.info("[API] Admin %s directly registered worker %s", user.username, username)
+    return jsonify({"success": True, "worker": new_worker.to_full_dict()})
 
 
 @admin.route("/api/workers/<int:worker_id>/approve", methods=["POST"])

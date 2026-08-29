@@ -44,3 +44,11 @@ def api_login_admin(client, reg_no="UNI001", username="admin1", password="adminp
         "union_reg_no": reg_no, "username": username, "password": password
     })
     return resp.get_json()
+
+
+def api_admin_add_worker(client, admin_token, username="worker1", full_name="Worker One",
+                          phone="7777777777", **extra):
+    payload = {"username": username, "password": "workerpass123", "full_name": full_name, "phone": phone}
+    payload.update(extra)
+    resp = client.post("/admin/api/workers", headers={"Authorization": f"Bearer {admin_token}"}, json=payload)
+    return resp.get_json()

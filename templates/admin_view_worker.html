@@ -1,0 +1,88 @@
+{% extends 'base.html' %}{% block content %}
+<div style="display:flex;justify-content:space-between;align-items:center;">
+  <h1>{{ worker.full_name }}</h1>
+  <div>
+    <a class="button" href="{{ url_for('admin.edit_worker_page', worker_id=worker.id) }}">{{ translate('edit') }}</a>
+    <a class="button" href="{{ url_for('admin.workers') }}">← {{ translate('members') }}</a>
+  </div>
+</div>
+<p class="tagline">
+  {{ translate('username') }}: {{ worker.username }} ·
+  <span class="badge {{ worker.status }}">{{ worker.status }}</span> ·
+  {{ claims_count }} {{ translate('claims') }}
+</p>
+
+<div class="two-col">
+  <section class="panel">
+    <h2>{{ translate('basic_details') }}</h2>
+    {% if worker.photo_file %}
+    <img src="{{ url_for('admin.view_file', relpath=worker.photo_file) }}" alt="" style="width:96px;height:96px;border-radius:8px;object-fit:cover;margin-bottom:12px;">
+    {% endif %}
+    <table>
+      <tr><td>{{ translate('full_name') }}</td><td>{{ worker.full_name }}</td></tr>
+      <tr><td>{{ translate('phone') }}</td><td>{{ worker.phone }}</td></tr>
+      <tr><td>{{ translate('email_optional') }}</td><td>{{ worker.email or '-' }}</td></tr>
+      <tr><td>{{ translate('address') }}</td><td>{{ worker.address or '-' }}</td></tr>
+      <tr><td>{{ translate('worker_type') }}</td><td>{{ worker.worker_type or '-' }}</td></tr>
+      <tr><td>{{ translate('experience_years') }}</td><td>{{ worker.experience_years or '-' }}</td></tr>
+      <tr><td>{{ translate('language') }}</td><td>{{ worker.language }}</td></tr>
+      <tr><td>{{ translate('aadhar_no') }}</td><td>{{ worker.aadhar_no or '-' }}</td></tr>
+      <tr><td>{{ translate('pan_no') }}</td><td>{{ worker.pan_no or '-' }}</td></tr>
+    </table>
+  </section>
+
+  <section class="panel">
+    <h2>{{ translate('health_card_no') }} <span class="badge {{ 'approved' if worker.health_card_status == 'Verified' else 'pending' }}">{{ worker.health_card_status }}</span></h2>
+    <table>
+      <tr><td>{{ translate('health_card_no') }}</td><td>{{ worker.health_card_no or '-' }}</td></tr>
+      <tr><td>{{ translate('view') }}</td><td>{% if worker.health_card_file %}<a href="{{ url_for('admin.view_file', relpath=worker.health_card_file) }}" target="_blank">{{ translate('view') }}</a>{% else %}{{ translate('no_file') }}{% endif %}</td></tr>
+    </table>
+
+    <h2>{{ translate('union_card_no') }}
+      {% if worker.union_card_expiry_date and worker.union_card_expiry_date < today %}<span class="badge rejected">{{ translate('expired') }}</span>{% endif %}
+    </h2>
+    <table>
+      <tr><td>{{ translate('union_card_no') }}</td><td>{{ worker.union_card_id_no or '-' }}</td></tr>
+      <tr><td>{{ translate('issue_date') }}</td><td>{{ worker.union_card_issue_date or '-' }}</td></tr>
+      <tr><td>{{ translate('expiry_date') }}</td><td>{{ worker.union_card_expiry_date or '-' }}</td></tr>
+      <tr><td>{{ translate('view') }}</td><td>{% if worker.union_card_file %}<a href="{{ url_for('admin.view_file', relpath=worker.union_card_file) }}" target="_blank">{{ translate('view') }}</a>{% else %}{{ translate('no_file') }}{% endif %}</td></tr>
+    </table>
+
+    <h2>{{ translate('labour_card_no') }}
+      {% if worker.labour_card_expiry_date and worker.labour_card_expiry_date < today %}<span class="badge rejected">{{ translate('expired') }}</span>{% endif %}
+    </h2>
+    <table>
+      <tr><td>{{ translate('labour_card_no') }}</td><td>{{ worker.labour_card_no or '-' }}</td></tr>
+      <tr><td>{{ translate('issue_date') }}</td><td>{{ worker.labour_card_issue_date or '-' }}</td></tr>
+      <tr><td>{{ translate('expiry_date') }}</td><td>{{ worker.labour_card_expiry_date or '-' }}</td></tr>
+      <tr><td>{{ translate('view') }}</td><td>{% if worker.labour_card_file %}<a href="{{ url_for('admin.view_file', relpath=worker.labour_card_file) }}" target="_blank">{{ translate('view') }}</a>{% else %}{{ translate('no_file') }}{% endif %}</td></tr>
+    </table>
+  </section>
+</div>
+
+<div class="two-col">
+  <section class="panel">
+    <h2>{{ translate('insurance_provider') }} <span class="badge {{ 'approved' if worker.insurance_status == 'Active' else 'pending' }}">{{ worker.insurance_status }}</span></h2>
+    <table>
+      <tr><td>{{ translate('insurance_provider') }}</td><td>{{ worker.insurance_provider or '-' }}</td></tr>
+      <tr><td>{{ translate('insurance_policy_no') }}</td><td>{{ worker.insurance_policy_no or '-' }}</td></tr>
+      <tr><td>{{ translate('view') }}</td><td>{% if worker.insurance_card_file %}<a href="{{ url_for('admin.view_file', relpath=worker.insurance_card_file) }}" target="_blank">{{ translate('view') }}</a>{% else %}{{ translate('no_file') }}{% endif %}</td></tr>
+    </table>
+  </section>
+
+  <section class="panel">
+    <h2>{{ translate('bank_account_no') }}</h2>
+    <table>
+      <tr><td>{{ translate('bank_name') }}</td><td>{{ worker.bank_name or '-' }}</td></tr>
+      <tr><td>{{ translate('bank_account_no') }}</td><td>{{ worker.bank_account_no or '-' }}</td></tr>
+      <tr><td>{{ translate('bank_ifsc') }}</td><td>{{ worker.bank_ifsc or '-' }}</td></tr>
+      <tr><td>{{ translate('nominee_name') }}</td><td>{{ worker.nominee_name or '-' }}</td></tr>
+      <tr><td>{{ translate('nominee_relation') }}</td><td>{{ worker.nominee_relation or '-' }}</td></tr>
+    </table>
+  </section>
+</div>
+
+<section class="panel">
+  <a class="button" href="{{ url_for('admin.claims') }}">{{ translate('claims') }} →</a>
+</section>
+{% endblock %}

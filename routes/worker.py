@@ -1,9 +1,10 @@
 import logging
+import os
 from datetime import date, datetime
 
 from flask import (
-    Blueprint, flash, jsonify, redirect, render_template, request,
-    send_file, session, url_for
+    Blueprint, abort, current_app, flash, jsonify, redirect, render_template,
+    request, send_file, session, url_for
 )
 from flask_login import current_user, login_required
 
@@ -59,6 +60,42 @@ def members():
         .all()
     )
     return render_template("worker_members.html", user=current_user, members=all_members)
+
+
+def _serve_member_photo(member):
+    """Shared logic for serving a fellow union member's profile photo only
+    -- never any other document field -- to another worker. Restricting to
+    exactly photo_file (rather than a generic relpath) means a worker can
+    never guess their way into someone else's health/insurance/ID card by
+    trying different file paths."""
+    if not member or not member.photo_file:
+        abort(404)
+    upload_root = os.path.abspath(current_app.config["UPLOAD_DIR"])
+    abs_path = os.path.abspath(os.path.join(upload_root, member.photo_file))
+    if not abs_path.startswith(upload_root + os.sep):
+        abort(403)
+    if not os.path.isfile(abs_path):
+        abort(404)
+    return send_file(abs_path)
+
+
+@worker.route("/members/<int:member_id>/photo")
+@login_required
+@worker_required
+def member_photo(member_id):
+    member = User.query.filter_by(
+        id=member_id, union_id=current_user.union_id, role="worker", status="approved"
+    ).first()
+    return _serve_member_photo(member)
+
+
+@worker.route("/api/members/<int:member_id>/photo")
+@api_login_required
+def api_member_photo(user, member_id):
+    member = User.query.filter_by(
+        id=member_id, union_id=user.union_id, role="worker", status="approved"
+    ).first()
+    return _serve_member_photo(member)
 
 
 # =====================================================

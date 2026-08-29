@@ -1,19 +1,13 @@
 """These tests exercise the FarmProfit-style recommendation/report helpers
 kept for the worker's own income/expense reports (PDF/Excel export)."""
-from conftest import register_union, api_login_admin
+from conftest import register_union, api_login_admin, api_admin_add_worker
 
 
 def _login_worker(client):
     register_union(client)
-    client.post("/api/register-worker", json={
-        "union_reg_no": "UNI001", "username": "worker1", "password": "workerpass123",
-        "full_name": "Worker One", "phone": "7777777777",
-    })
     admin_data = api_login_admin(client)
     admin_token = admin_data["access_token"]
-    workers_resp = client.get("/admin/api/workers", headers={"Authorization": f"Bearer {admin_token}"})
-    worker_id = workers_resp.get_json()["workers"][0]["id"]
-    client.post(f"/admin/api/workers/{worker_id}/approve", headers={"Authorization": f"Bearer {admin_token}"})
+    api_admin_add_worker(client, admin_token, username="worker1")
     login_resp = client.post("/api/login", json={
         "union_reg_no": "UNI001", "username": "worker1", "password": "workerpass123"
     })

@@ -94,9 +94,11 @@ class User(db.Model, UserMixin):
         return {
             "id": self.id,
             "full_name": self.full_name,
+            "address": self.address,
             "worker_type": self.worker_type,
             "experience_years": self.experience_years,
             "phone": self.phone,
+            "photo_file": self.photo_file,
         }
 
     def to_full_dict(self):

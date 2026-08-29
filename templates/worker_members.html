@@ -2,10 +2,20 @@
 <h1>{{ translate('members') }}</h1>
 <section class="panel">
   <table>
-    <tr><th>{{ translate('full_name') }}</th><th>{{ translate('worker_type') }}</th><th>{{ translate('experience_years') }}</th><th>{{ translate('phone') }}</th></tr>
+    <tr><th></th><th>{{ translate('full_name') }}</th><th>{{ translate('worker_type') }}</th><th>{{ translate('experience_years') }}</th><th>{{ translate('address') }}</th><th>{{ translate('phone') }}</th></tr>
     {% for m in members %}
-    <tr><td>{{ m.full_name }}</td><td>{{ m.worker_type or '-' }}</td><td>{{ m.experience_years or '-' }}</td><td>{{ m.phone }}</td></tr>
-    {% else %}<tr><td colspan="4" class="empty">{{ translate('no_data') }}</td></tr>{% endfor %}
+    <tr>
+      <td>
+        {% if m.photo_file %}
+        <img src="{{ url_for('worker.member_photo', member_id=m.id) }}" alt="" style="width:36px;height:36px;border-radius:50%;object-fit:cover;">
+        {% else %}
+        <span style="display:inline-block;width:36px;height:36px;border-radius:50%;background:#e2e6ea;text-align:center;line-height:36px;">{{ m.full_name[0] }}</span>
+        {% endif %}
+      </td>
+      <td>{{ m.full_name }}</td><td>{{ m.worker_type or '-' }}</td><td>{{ m.experience_years or '-' }}</td>
+      <td>{{ m.address or '-' }}</td><td>{{ m.phone }}</td>
+    </tr>
+    {% else %}<tr><td colspan="6" class="empty">{{ translate('no_data') }}</td></tr>{% endfor %}
   </table>
 </section>
 {% endblock %}
